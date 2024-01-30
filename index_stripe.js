@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser=require('body-parser');
 const Stripe = require('stripe');
 const cors = require("cors");
 const db=require('./queries_stripe');
@@ -9,10 +10,15 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 
 const port = 3002;
-const host = "localhost";
+//const host = "localhost";
 
+app.get('/',(request,response)=>{
+	response.json({info:'API CHPSystem Stripe versión: 20240124'});
+});
 app.get('/keysBySucursal/:id_clave',db.getKeysBySucursal);
 
 app.post("/payment-sheet", async(req, res, next) => {
@@ -64,10 +70,11 @@ app.post("/payment-sheet", async(req, res, next) => {
         };
         res.status(200).send(response);
     } catch(e) {
+        console.log(res);	    
         next(e);
     }
 });
 
-app.listen(port, host, () => {
+app.listen(port, () => {
   console.log(`Server is running at ${port}`);
 });
